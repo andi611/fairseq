@@ -65,12 +65,16 @@ lr_scheduler:
 model:
   _name: hubert
   label_rate: ???
+  encoder_layers: 3
+  encoder_embed_dim: 512
+  encoder_ffn_embed_dim: 2048
+  encoder_attention_heads: 12
+  final_dim: 256
   skip_masked: false
   skip_nomask: false
   mask_prob: 0.80
   extractor_mode: default
   conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
-  final_dim: 256
   encoder_layerdrop: 0.05
   dropout_input: 0.1
   dropout_features: 0.1
