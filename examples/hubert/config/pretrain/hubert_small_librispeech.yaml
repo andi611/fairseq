@@ -65,7 +65,7 @@ lr_scheduler:
 model:
   _name: hubert
   label_rate: ???
-  encoder_layers: 3
+  encoder_layers: 6
   encoder_embed_dim: 512
   encoder_ffn_embed_dim: 2048
   encoder_attention_heads: 8
