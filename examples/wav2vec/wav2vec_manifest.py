@@ -51,7 +51,10 @@ def main(args):
         os.makedirs(args.dest)
 
     dir_path = os.path.realpath(args.root)
-    search_path = os.path.join(dir_path, "**/*." + args.ext)
+    if "LibriSpeech" in dir_path:
+        search_path = os.path.join(dir_path, "train-**/*." + args.ext)
+    else:
+        search_path = os.path.join(dir_path, "**/*." + args.ext)
     rand = random.Random(args.seed)
 
     valid_f = (
