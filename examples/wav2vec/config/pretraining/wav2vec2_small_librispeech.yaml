@@ -4,11 +4,20 @@ common:
   fp16: true
   log_format: json
   log_interval: 200
+  seed: 1337
 
 checkpoint:
   save_interval_updates: 25000
   keep_interval_updates: 1
   no_epoch_checkpoints: true
+
+distributed_training:
+  ddp_backend: no_c10d
+  distributed_backend: 'nccl'
+  # distributed_world_size: 32 # see: https://github.com/facebookresearch/fairseq/issues/4602
+  # distributed_port: 29671
+  # nprocs_per_node: 8
+  find_unused_parameters: true
 
 task:
   _name: audio_pretraining
@@ -50,12 +59,17 @@ model:
   _name: wav2vec2
   quantize_targets: true
   encoder_layers: 3
-  encoder_embed_dim: 512
+  encoder_embed_dim: 640
   encoder_ffn_embed_dim: 2048
-  encoder_attention_heads: 12
+  encoder_attention_heads: 8
   final_dim: 256
+  extractor_mode: default
+  conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
   encoder_layerdrop: 0.05
   dropout_input: 0.1
   dropout_features: 0.1
+  dropout: 0.1
+  attention_dropout: 0.1
   feature_grad_mult: 0.1
-  encoder_embed_dim: 768
+  untie_final_proj: true
+  activation_dropout: 0.0
