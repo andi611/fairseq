@@ -52,7 +52,7 @@ def main(args):
 
     dir_path = os.path.realpath(args.root)
     if "LibriSpeech" in dir_path:
-        search_path = os.path.join(dir_path, "train-**/*." + args.ext)
+        search_path = os.path.join(dir_path, "train-**/**/*." + args.ext)
     else:
         search_path = os.path.join(dir_path, "**/*." + args.ext)
     rand = random.Random(args.seed)
