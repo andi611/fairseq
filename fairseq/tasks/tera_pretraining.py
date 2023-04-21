@@ -102,8 +102,8 @@ class HubertPretrainingConfig(FairseqDataclass):
     )
 
 
-@register_task("hubert_pretraining", dataclass=HubertPretrainingConfig)
-class HubertPretrainingTask(FairseqTask):
+@register_task("tera_pretraining", dataclass=HubertPretrainingConfig)
+class TeraPretrainingTask(FairseqTask):
 
     cfg: HubertPretrainingConfig
 
@@ -114,7 +114,7 @@ class HubertPretrainingTask(FairseqTask):
         super().__init__(cfg)
 
         logger.info(f"current directory is {os.getcwd()}")
-        logger.info(f"HubertPretrainingTask Config {cfg}")
+        logger.info(f"TeraPretrainingTask Config {cfg}")
 
         self.cfg = cfg
         self.fine_tuning = cfg.fine_tuning
@@ -141,7 +141,7 @@ class HubertPretrainingTask(FairseqTask):
     @classmethod
     def setup_task(
         cls, cfg: HubertPretrainingConfig, **kwargs
-    ) -> "HubertPretrainingTask":
+    ) -> "TeraPretrainingTask":
         return cls(cfg)
 
     def load_dictionaries(self):
