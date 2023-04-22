@@ -22,11 +22,11 @@ distributed_training:
   find_unused_parameters: true
 
 task:
-  _name: hubert_pretraining
+  _name: tera_pretraining
   data: ???
   label_dir: ???
-  labels: ???
-  label_rate: ${model.label_rate}
+  labels: ["km"]
+  label_rate: 100
   sample_rate: 16000
   max_sample_size: 250000
   min_sample_size: 32000
@@ -42,7 +42,7 @@ dataset:
   validate_interval_updates: 10000
 
 criterion:
-  _name: hubert
+  _name: tera
   pred_masked_weight: 1.0
   pred_nomask_weight: 0.0
   loss_weights: [10,]
@@ -63,7 +63,7 @@ lr_scheduler:
   warmup_updates: 20000 # 32000 # 8% of the training steps
 
 model:
-  _name: hubert
+  _name: tera
   label_rate: ???
   encoder_layers: 12
   encoder_embed_dim: 384
@@ -95,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: ???
+    dir: tera_slim_960_iter1
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
