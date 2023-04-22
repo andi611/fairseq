@@ -64,7 +64,7 @@ lr_scheduler:
 
 model:
   _name: tera
-  label_rate: 100
+  label_rate: ???
   encoder_layers: 12
   encoder_embed_dim: 384
   encoder_ffn_embed_dim: 768
