@@ -306,12 +306,9 @@ class TeraModel(BaseFairseqModel):
             )
 
         self.untie_final_proj = cfg.untie_final_proj
-        if self.untie_final_proj:
-            self.final_proj = nn.Linear(
-                cfg.encoder_embed_dim, final_dim * len(dictionaries)
-            )
-        else:
-            self.final_proj = nn.Linear(cfg.encoder_embed_dim, final_dim)
+        self.final_proj = nn.Linear(
+                cfg.encoder_embed_dim, 78
+            ) # NOTE: 78 = 39 (mfcc dim) * 2
 
         # modules below are not needed during fine-tuning
         if any([d is None for d in dictionaries]):
@@ -448,9 +445,9 @@ class TeraModel(BaseFairseqModel):
 
     def forward(
         self,
-        source: torch.Tensor, # [batch, wave_shape]
+        source: torch.Tensor, # [batch, wave_len]
         target_list: Optional[List[torch.Tensor]] = None,
-        padding_mask: Optional[torch.Tensor] = None, # [batch, wave_shape]
+        padding_mask: Optional[torch.Tensor] = None, # [batch, wave_len]
         mask: bool = True,
         features_only: bool = False,
         output_layer: Optional[int] = None,
@@ -460,10 +457,16 @@ class TeraModel(BaseFairseqModel):
         
         mfcc_target = self.get_mfcc_feats(source)
         mfcc_target = torch.stack(mfcc_target, 0)
+        mfcc_target = mfcc_target[:, :(mfcc_target.shape[1] // 2) * 2, :]
+        mfcc_target = torch.reshape(mfcc_target, (mfcc_target.shape[0], -1, int(mfcc_target.shape[2] * 2)))
+        T = min(features.shape[2], mfcc_target.shape[1])
+        mfcc_target = mfcc_target[:, :T, :]
+        features = features[:, :, :T]
+        
         if target_list is not None:
             features, target_list = self.forward_targets(features, target_list) # [batch, 512, time]
 
-        features_pen = features.float().pow(2).mean()
+        features_pen = features.float().pow(2).mean() # NOTE: a feature loss
 
         features = features.transpose(1, 2) # [batch, time, 512]
         features = self.layer_norm(features)
@@ -471,6 +474,7 @@ class TeraModel(BaseFairseqModel):
 
         if padding_mask is not None:
             padding_mask = self.forward_padding_mask(features, padding_mask) # [batch, time]
+            padding_mask = padding_mask[:, :T]
 
         if self.post_extract_proj is not None:
             features = self.post_extract_proj(features) # [batch, time, 640]
@@ -478,8 +482,8 @@ class TeraModel(BaseFairseqModel):
         features = self.dropout_input(features) # [batch, time, 640]
         unmasked_features = self.dropout_features(unmasked_features) # [batch, time, 512]
 
-        if mask:
-            x, mask_indices = self.apply_mask(features, padding_mask, target_list) # x [batch, time, 640]
+        if mask: # NOTE: apply mask here
+            x, mask_indices = self.apply_mask(features, padding_mask, target_list) # x [batch, time, 640]; masked_indices [batch, time], about half of x is masked
         else:
             x = features
             mask_indices = None
@@ -493,57 +497,18 @@ class TeraModel(BaseFairseqModel):
             x,
             padding_mask=padding_mask,
             layer=None if output_layer is None else output_layer - 1,
-        )
+        ) # The features after transformer encoder
 
-        if features_only:
+        if features_only: # NOTE: return features; for inference
             return {"x": x, "padding_mask": padding_mask, "features": features}
 
-        def compute_pred(proj_x, target, label_embs):
-            # compute logits for the i-th label set
-            y = torch.index_select(label_embs, 0, target.long())
-            negs = label_embs.unsqueeze(1).expand(-1, proj_x.size(0), -1)
-            if self.target_glu:
-                y = self.target_glu(y)
-                negs = self.target_glu(negs)
-            # proj_x: (S, D)
-            # y: (S, D)
-            # negs: (Neg, S, D)
-            return self.compute_nce(proj_x, y, negs)
-
-        label_embs_list = self.label_embs_concat.split(self.num_classes, 0)
-
-        if not self.skip_masked:
-            masked_indices = torch.logical_and(~padding_mask, mask_indices)
-            proj_x_m = self.final_proj(x[masked_indices])
-            if self.untie_final_proj:
-                proj_x_m_list = proj_x_m.chunk(len(target_list), dim=-1)
-            else:
-                proj_x_m_list = [proj_x_m for _ in range(len(target_list))]
-            logit_m_list = [
-                compute_pred(proj_x_m, t[masked_indices], label_embs_list[i])
-                for i, (proj_x_m, t) in enumerate(zip(proj_x_m_list, target_list))
-            ]
-        else:
-            logit_m_list = [None for _ in target_list]
-
-        if not self.skip_nomask:
-            nomask_indices = torch.logical_and(~padding_mask, ~mask_indices)
-            proj_x_u = self.final_proj(x[nomask_indices])
-            if self.untie_final_proj:
-                proj_x_u_list = proj_x_u.chunk(len(target_list), dim=-1)
-            else:
-                proj_x_u_list = [proj_x_u for _ in range(len(target_list))]
-
-            logit_u_list = [
-                compute_pred(proj_x_u, t[nomask_indices], label_embs_list[i])
-                for i, (proj_x_u, t) in enumerate(zip(proj_x_u_list, target_list))
-            ]
-        else:
-            logit_u_list = [None for _ in target_list]
+        masked_indices = torch.logical_and(~padding_mask, mask_indices) # mask_indices is used for hubert masking; padding_mask is used during data loading
+        proj_x_m = self.final_proj(x[masked_indices]) # NOTE: get the unmasked frames
+        mfcc_target_m = mfcc_target[masked_indices]
 
         result = {
-            "logit_m_list": logit_m_list,
-            "logit_u_list": logit_u_list,
+            "proj_x_m": proj_x_m,
+            "mfcc_target_m": mfcc_target_m,
             "padding_mask": padding_mask,
             "features_pen": features_pen,
         }
