@@ -503,6 +503,10 @@ class TeraModel(BaseFairseqModel):
             return {"x": x, "padding_mask": padding_mask, "features": features}
 
         masked_indices = torch.logical_and(~padding_mask, mask_indices) # mask_indices is used for hubert masking; padding_mask is used during data loading
+        T = min(x.shape[1], mfcc_target.shape[1], masked_indices.shape[1])
+        masked_indices = masked_indices[:, :T]
+        x = x[:, :T, :]
+        mfcc_target = mfcc_target[:, :T, :]
         proj_x_m = self.final_proj(x[masked_indices]) # NOTE: get the unmasked frames
         mfcc_target_m = mfcc_target[masked_indices]
 
