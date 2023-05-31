@@ -54,7 +54,7 @@ model:
   _name: wav2vec2
   quantize_targets: true
   encoder_layers: 12
-  encoder_embed_dim: 352
+  encoder_embed_dim: 320
   encoder_ffn_embed_dim: 768
   encoder_attention_heads: 8
   final_dim: 256
