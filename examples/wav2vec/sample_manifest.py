@@ -27,6 +27,7 @@ def sample_manifest(input_file, output_file, max_timesteps):
     data_lines = lines[1:]
 
     # Randomly shuffle the data lines
+    random.seed(1337)
     random.shuffle(data_lines)
 
     sampled_lines = []
