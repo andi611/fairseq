@@ -6,7 +6,7 @@ common:
   log_interval: 200
 
 checkpoint:
-  save_interval_updates: 1 # 25000
+  save_interval_updates: 25000
   keep_interval_updates: 1
   no_epoch_checkpoints: true
 
@@ -37,7 +37,7 @@ criterion:
   loss_weights: [0.1, 10]
 
 optimization:
-  max_update: 400000
+  max_update: 414242
   lr: [0.0004]
 
 optimizer:
