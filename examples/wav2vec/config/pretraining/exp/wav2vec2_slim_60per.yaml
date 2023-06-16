@@ -26,7 +26,7 @@ task:
   normalize: false
 
 dataset:
-  num_workers: 6
+  num_workers: 4
   max_tokens: 1400000
   skip_invalid_size_inputs_valid_test: true
 
