@@ -6,7 +6,7 @@ common:
   log_interval: 200
 
 checkpoint:
-  save_interval_updates: 1 #25000
+  save_interval_updates: 25000
   keep_interval_updates: 1
   no_epoch_checkpoints: true
 
@@ -53,10 +53,10 @@ lr_scheduler:
 model:
   _name: wav2vec2
   quantize_targets: true
-  encoder_layers: 12
-  encoder_embed_dim: 400
-  encoder_ffn_embed_dim: 768
-  encoder_attention_heads: 8
+  encoder_layers: 13
+  encoder_embed_dim: 496
+  encoder_ffn_embed_dim: 1024
+  encoder_attention_heads: 16
   final_dim: 256
   extractor_mode: default
   conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
