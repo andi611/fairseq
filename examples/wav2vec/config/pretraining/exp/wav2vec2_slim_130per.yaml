@@ -37,7 +37,7 @@ criterion:
   loss_weights: [0.1, 10]
 
 optimization:
-  max_update: 400000
+  max_update: 363047
   lr: [0.0004]
 
 optimizer:
