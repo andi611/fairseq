@@ -95,7 +95,7 @@ hydra:
           - run
           - task.data
   run:
-    dir: /checkpoint/wnhsu/w2v/hubert_final/hydra_pt
+    dir: ???
   sweep:
-    dir: /checkpoint/wnhsu/w2v/hubert_final/hydra_pt
+    dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
