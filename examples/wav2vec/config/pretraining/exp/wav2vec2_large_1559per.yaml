@@ -38,7 +38,7 @@ criterion:
 
 optimization:
   max_update: 72234
-  lr: [0.0004]
+  lr: [0.0002]
 
 optimizer:
   _name: adam
