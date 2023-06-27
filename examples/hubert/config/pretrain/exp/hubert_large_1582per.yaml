@@ -28,7 +28,7 @@ task:
   labels: ???
   label_rate: ${model.label_rate}
   sample_rate: 16000
-  max_sample_size: 25000
+  max_sample_size: 250000
   min_sample_size: 32000
   pad_audio: false
   random_crop: true
@@ -36,7 +36,7 @@ task:
 
 dataset:
   num_workers: 6
-  max_tokens: 1400000
+  max_tokens: 900000
   skip_invalid_size_inputs_valid_test: true
   validate_interval: 5
   validate_interval_updates: 10000
