@@ -8,7 +8,7 @@ common:
   tensorboard_logdir: tblog
 
 checkpoint:
-  save_interval_updates: 1 #25000
+  save_interval_updates: 25000
   keep_interval_updates: 1
   no_epoch_checkpoints: true
 
@@ -48,8 +48,8 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 400000
-  lr: [0.0005]
+  max_update: 187222
+  lr: [0.0003]
   clip_norm: 10.0
 
 optimizer:
@@ -91,7 +91,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: ???
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}/473per
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
