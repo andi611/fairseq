@@ -36,7 +36,7 @@ task:
 
 dataset:
   num_workers: 6
-  max_tokens: 900000
+  max_tokens: 700000
   skip_invalid_size_inputs_valid_test: true
   validate_interval: 5
   validate_interval_updates: 10000
@@ -48,7 +48,7 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 235429
+  max_update: 160144
   lr: [0.0002]
   clip_norm: 10.0
 
