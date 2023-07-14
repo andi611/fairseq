@@ -48,7 +48,7 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 250000 # 400000 # The first iteration is trained for 250k steps, while the second iteration is trained for 400k steps
+  max_update: 400000
   lr: [0.0005]
   clip_norm: 10.0
 
@@ -60,7 +60,7 @@ optimizer:
 
 lr_scheduler:
   _name: polynomial_decay
-  warmup_updates: 20000 # 32000 # 8% of the training steps
+  warmup_updates: 32000 # 8% of the training steps
 
 model:
   _name: tera
@@ -95,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: tera_small_960_iter1
+    dir: tera2_small_960
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}

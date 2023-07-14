@@ -26,7 +26,7 @@ task:
   data: ???
   label_dir: ???
   labels: ["km"]
-  label_rate: ${model.label_rate}
+  label_rate: 100
   sample_rate: 16000
   max_sample_size: 250000
   min_sample_size: 32000
@@ -64,12 +64,12 @@ lr_scheduler:
 
 model:
   _name: tera
-  label_rate: 100
-  encoder_layers: 12
-  encoder_embed_dim: 384
-  encoder_ffn_embed_dim: 768
-  encoder_attention_heads: 8
-  final_dim: 256
+  label_rate: ???
+  encoder_layers: 24
+  encoder_embed_dim: 1024
+  encoder_ffn_embed_dim: 4096
+  encoder_attention_heads: 16
+  final_dim: 768
   skip_masked: false
   skip_nomask: false
   mask_prob: 0.80
@@ -95,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: tera2_slim_960
+    dir: tera2_base_960
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
