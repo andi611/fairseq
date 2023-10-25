@@ -72,7 +72,9 @@ model:
   final_dim: 256
   skip_masked: false
   skip_nomask: false
-  mask_prob: 0.80
+  mask_prob: 1.5 # 1.5 / 10 = 0.15 -> 15%
+  mask_length: 10
+  no_mask_overlap: false
   extractor_mode: default
   conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
   encoder_layerdrop: 0.05
