@@ -95,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: tera2_slim_960
+    dir: tera2_slim_960_200per
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
