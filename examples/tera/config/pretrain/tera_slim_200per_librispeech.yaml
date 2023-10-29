@@ -72,9 +72,7 @@ model:
   final_dim: 256
   skip_masked: false
   skip_nomask: false
-  mask_prob: 1.5 # 1.5 / 10 = 0.15 -> 15%
-  mask_length: 10
-  no_mask_overlap: false
+  mask_prob: 0.80
   extractor_mode: default
   conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
   encoder_layerdrop: 0.05
@@ -97,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: tera2_slim_960_200per
+    dir: tera2_slim_960_200per_v2
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
