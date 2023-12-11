@@ -8,7 +8,7 @@ common:
   tensorboard_logdir: tblog
 
 checkpoint:
-  save_interval_updates: 25000
+  save_interval_updates: 275035
   keep_interval_updates: 1
   no_epoch_checkpoints: true
 
@@ -48,8 +48,8 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 297370
-  lr: [0.0004]
+  max_update: 550070
+  lr: [0.0005]
   clip_norm: 10.0
 
 optimizer:
@@ -65,10 +65,10 @@ lr_scheduler:
 model:
   _name: tera
   label_rate: 100
-  encoder_layers: 15
-  encoder_embed_dim: 528
-  encoder_ffn_embed_dim: 1024
-  encoder_attention_heads: 12
+  encoder_layers: 4
+  encoder_embed_dim: 192
+  encoder_ffn_embed_dim: 320
+  encoder_attention_heads: 4
   final_dim: 256
   skip_masked: false
   skip_nomask: false
@@ -95,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: tera2_slim_960_200per_v2
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}/tera2_slim_960_30per
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
