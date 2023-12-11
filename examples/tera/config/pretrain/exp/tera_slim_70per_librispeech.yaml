@@ -8,8 +8,8 @@ common:
   tensorboard_logdir: tblog
 
 checkpoint:
-  save_interval_updates: 227406
-  keep_interval_updates: 1
+  save_interval_updates: 113703
+  keep_interval_updates: 5
   no_epoch_checkpoints: true
 
 
