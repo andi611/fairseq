@@ -8,7 +8,7 @@ common:
   tensorboard_logdir: tblog
 
 checkpoint:
-  save_interval_updates: 40036
+  save_interval_updates: 100000
   keep_interval_updates: 5
   no_epoch_checkpoints: true
 
@@ -32,11 +32,11 @@ task:
   min_sample_size: 32000
   pad_audio: false
   random_crop: true
-  normalize: true # must be consistent with extractor
+  normalize: false # must be consistent with extractor
 
 dataset:
   num_workers: 6
-  max_tokens: 700000
+  max_tokens: 1400000
   skip_invalid_size_inputs_valid_test: true
   validate_interval: 5
   validate_interval_updates: 10000
@@ -48,8 +48,8 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 160144
-  lr: [0.0001]
+  max_update: 200000
+  lr: [0.0005]
   clip_norm: 10.0
 
 optimizer:
@@ -65,23 +65,22 @@ lr_scheduler:
 model:
   _name: tera
   label_rate: 100
-  encoder_layers: 24
-  encoder_embed_dim: 1024
-  encoder_ffn_embed_dim: 4096
-  encoder_attention_heads: 16
-  final_dim: 768
+  encoder_layers: 12
+  encoder_embed_dim: 384
+  encoder_ffn_embed_dim: 768
+  encoder_attention_heads: 8
+  final_dim: 256
   skip_masked: false
   skip_nomask: false
   mask_prob: 0.80
-  extractor_mode: layer_norm
+  extractor_mode: default
   conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
-  encoder_layerdrop: 0.0
-  dropout_input: 0.0
-  dropout_features: 0.0
-  dropout: 0.0
-  attention_dropout: 0.0
-  layer_norm_first: true
-  feature_grad_mult: 1.0
+  encoder_layerdrop: 0.05
+  dropout_input: 0.1
+  dropout_features: 0.1
+  dropout: 0.1
+  attention_dropout: 0.1
+  feature_grad_mult: 0.1
   untie_final_proj: true
   activation_dropout: 0.0
 
@@ -96,7 +95,7 @@ hydra:
           - task.data
           - task.label_dir
   run:
-    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}/tera2_large_960_1582per
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}/tera2_slim_960_100per
   sweep:
     dir: ???
     subdir: ${hydra.job.config_name}__${hydra.job.override_dirname}
