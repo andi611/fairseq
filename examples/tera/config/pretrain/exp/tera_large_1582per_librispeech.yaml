@@ -8,7 +8,7 @@ common:
   tensorboard_logdir: tblog
 
 checkpoint:
-  save_interval_updates: 40036
+  save_interval_updates: 18055
   keep_interval_updates: 5
   no_epoch_checkpoints: true
 
@@ -35,7 +35,7 @@ task:
   normalize: true # must be consistent with extractor
 
 dataset:
-  num_workers: 6
+  num_workers: 8
   max_tokens: 700000
   skip_invalid_size_inputs_valid_test: true
   validate_interval: 5
@@ -48,8 +48,8 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 160144
-  lr: [0.0001]
+  max_update: 72219
+  lr: [0.0002]
   clip_norm: 10.0
 
 optimizer:
