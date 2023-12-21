@@ -8,7 +8,7 @@ common:
   tensorboard_logdir: tblog
 
 checkpoint:
-  save_interval_updates: 18055
+  save_interval_updates: 40036
   keep_interval_updates: 5
   no_epoch_checkpoints: true
 
@@ -32,10 +32,10 @@ task:
   min_sample_size: 32000
   pad_audio: false
   random_crop: true
-  normalize: true # must be consistent with extractor
+  normalize: false # must be consistent with extractor
 
 dataset:
-  num_workers: 8
+  num_workers: 6
   max_tokens: 700000
   skip_invalid_size_inputs_valid_test: true
   validate_interval: 5
@@ -48,7 +48,7 @@ criterion:
   loss_weights: [10,]
 
 optimization:
-  max_update: 72219
+  max_update: 160144
   lr: [0.0002]
   clip_norm: 10.0
 
@@ -73,14 +73,13 @@ model:
   skip_masked: false
   skip_nomask: false
   mask_prob: 0.80
-  extractor_mode: layer_norm
+  extractor_mode: default
   conv_feature_layers: '[(512,10,5)] + [(512,3,2)] * 4 + [(512,2,2)] * 2'
   encoder_layerdrop: 0.0
   dropout_input: 0.0
   dropout_features: 0.0
   dropout: 0.0
   attention_dropout: 0.0
-  layer_norm_first: true
   feature_grad_mult: 1.0
   untie_final_proj: true
   activation_dropout: 0.0
