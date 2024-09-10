@@ -1,10 +1,10 @@
 # TERA Speech Foundation Model - Fairseq Implementation
 
-This repository contains code for pre-training and evaluating the [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028) speech foundation model, a self-supervised learning model for speech processing tasks.
+This repository contains code for pre-training and evaluating the [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028), a self-supervised speech foundation model for speech processing tasks.
 
 ## Installing Fairseq
 
-This project relies on Fairseq. To install it, run the following commands:
+This project relies on [Fairseq](https://github.com/facebookresearch/fairseq). To install it, run the following commands:
 ```bash
 git clone https://github.com/andi611/fairseq.git
 cd fairseq
@@ -14,7 +14,7 @@ Read [here](https://github.com/andi611/fairseq/tree/master) for more details.
 
 ## Pre-training
 
-This version of TERA is modified from the HuBERT example ([HuBERT in fairseq](https://github.com/andi611/fairseq/tree/master/examples/hubert)) with minimal modification of code. As a result, the `task.data` and `task.label_dir` parameters in the following commands are not actually used in the TERA implementation but are required due to the HuBERT-based code structure.
+This version of TERA is modified from the HuBERT example ([HuBERT in fairseq](https://github.com/andi611/fairseq/tree/master/examples/hubert)) with minimal modification of code. As a result, the `task.data` and `task.label_dir` parameters in the following commands are not actually used in the TERA implementation but are required due to the HuBERT-based code structure. To obtain those, please follow the instructions in the [HuBERT example directory](https://github.com/andi611/fairseq/tree/master/examples/hubert).
 
 ### _Slim_ Model
 
