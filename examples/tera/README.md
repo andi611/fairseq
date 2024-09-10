@@ -1,116 +1,158 @@
-# HuBERT
+# TERA Speech Foundation Model - Fairseq Implementation
 
-## Pre-trained and fine-tuned (ASR) models
-Model | Pretraining Data | Finetuning Dataset | Model | Quantizer
-|---|---|---|---|---
-HuBERT Base (~95M params) | [Librispeech](http://www.openslr.org/12) 960 hr | No finetuning (Pretrained Model) | [download](https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960.pt) | [L9 km500](https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960_L9_km500.bin)
-HuBERT Large (~316M params) | [Libri-Light](https://github.com/facebookresearch/libri-light) 60k hr | No finetuning (Pretrained Model) | [download](https://dl.fbaipublicfiles.com/hubert/hubert_large_ll60k.pt)
-HuBERT Extra Large (~1B params) | [Libri-Light](https://github.com/facebookresearch/libri-light) 60k hr |  No finetuning (Pretrained Model) | [download](https://dl.fbaipublicfiles.com/hubert/hubert_xtralarge_ll60k.pt)
-HuBERT Large | [Libri-Light](https://github.com/facebookresearch/libri-light) 60k hr | [Librispeech](http://www.openslr.org/12) 960 hr | [download](https://dl.fbaipublicfiles.com/hubert/hubert_large_ll60k_finetune_ls960.pt)
-HuBERT Extra Large | [Libri-Light](https://github.com/facebookresearch/libri-light) 60k hr | [Librispeech](http://www.openslr.org/12) 960 hr | [download](https://dl.fbaipublicfiles.com/hubert/hubert_xtralarge_ll60k_finetune_ls960.pt)
+This repository contains code for pre-training and evaluating the [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028) speech foundation model, a self-supervised learning model for speech processing tasks.
 
-## Load a model
+## Installing Fairseq
+
+This project relies on Fairseq. To install it, run the following commands:
+```bash
+git clone https://github.com/andi611/fairseq.git
+cd fairseq
+pip install --editable ./
 ```
-ckpt_path = "/path/to/the/checkpoint.pt"
-models, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([ckpt_path])
-model = models[0]
-```
+Read [here](https://github.com/andi611/fairseq/tree/master) for more details.
 
-## Train a new model
+## Pre-training
 
-### Data preparation
+This version of TERA is modified from the HuBERT example ([HuBERT in fairseq](https://github.com/andi611/fairseq/tree/master/examples/hubert)) with minimal modification of code. As a result, the `task.data` and `task.label_dir` parameters in the following commands are not actually used in the TERA implementation but are required due to the HuBERT-based code structure.
 
-Follow the steps in `./simple_kmeans` to create:
-- `{train,valid}.tsv` waveform list files
-- `{train,valid}.km` frame-aligned pseudo label files.
-- `dict.km.txt` a dummy dictionary
-The `label_rate` is the same as the feature frame rate used for clustering,
-which is 100Hz for MFCC features and 50Hz for HuBERT features by default.
+### _Slim_ Model
 
-### Pre-train a HuBERT model
+To pre-train the TERA _Slim_ model on LibriSpeech:
 
-Suppose `{train,valid}.tsv` are saved at `/path/to/data`, `{train,valid}.km`
-are saved at `/path/to/labels`, and the label rate is 100Hz.
-
-To train a base model (12 layer transformer), run:
-```sh
-$ python fairseq_cli/hydra_train.py \
-  --config-dir /path/to/fairseq-py/examples/hubert/config/pretrain \
-  --config-name hubert_base_librispeech \
-  task.data=/path/to/data task.label_dir=/path/to/labels task.labels='["km"]' model.label_rate=100
+```bash
+python3 fairseq_cli/hydra_train.py \
+  --config-dir /work/a129195789/fairseq/examples/tera/config/pretrain/ \
+  --config-name tera_slim_librispeech.yaml \
+  task.data=/work/a129195789/fairseq/examples/hubert/simple_kmeans/data_dir/960 \
+  task.label_dir=/work/a129195789/fairseq/examples/hubert/simple_kmeans/label_dir/960
 ```
 
-### Fine-tune a HuBERT model with a CTC loss
+### _Slim_ Model with Different % Sizes
 
-Suppose `{train,valid}.tsv` are saved at `/path/to/data`, and their
-corresponding character transcripts `{train,valid}.ltr` are saved at
-`/path/to/trans`.
+For the _Slim_ % model:
 
-To fine-tune a pre-trained HuBERT model at `/path/to/checkpoint`, run
-```sh
-$ python fairseq_cli/hydra_train.py \
-  --config-dir /path/to/fairseq-py/examples/hubert/config/finetune \
-  --config-name base_10h \
-  task.data=/path/to/data task.label_dir=/path/to/trans \
-  model.w2v_path=/path/to/checkpoint
+```bash
+python3 fairseq_cli/hydra_train.py \
+  --config-dir /work/a129195789/fairseq/examples/tera/config/pretrain/exp \
+  --config-name tera_slim_200per_50flops_librispeech \
+  task.data=/work/a129195789/fairseq/examples/hubert/simple_kmeans/data_dir/960 \
+  task.label_dir=/work/a129195789/fairseq/examples/hubert/simple_kmeans/label_dir/960
 ```
 
-### Decode a HuBERT model
+## Downstream Evaluation
 
-Suppose the `test.tsv` and `test.ltr` are the waveform list and transcripts of
-the split to be decoded, saved at `/path/to/data`, and the fine-tuned model is
-saved at `/path/to/checkpoint`. We support three decoding modes:
-- Viterbi decoding: greedy decoding without a language model
-- KenLM decoding: decoding with an arpa-format KenLM n-gram language model
-- Fairseq-LM deocding: decoding with a Fairseq neural language model
+### Important: S3PRL Toolkit Installation
 
+Before proceeding with downstream evaluation, you must install the S3PRL toolkit from a specific branch. Use the following command:
 
-#### Viterbi decoding
-
-`task.normalize` needs to be consistent with the value used during fine-tuning.
-Decoding results will be saved at
-`/path/to/experiment/directory/decode/viterbi/test`.
-
-```sh
-$ python examples/speech_recognition/new/infer.py \
-  --config-dir /path/to/fairseq-py/examples/hubert/config/decode \
-  --config-name infer_viterbi \
-  task.data=/path/to/data \
-  task.normalize=[true|false] \
-  decoding.exp_dir=/path/to/experiment/directory \
-  common_eval.path=/path/to/checkpoint
-  dataset.gen_subset=test \
+```bash
+git clone -b tera2 https://github.com/s3prl/s3prl.git
+cd s3prl
+pip install -e .
 ```
 
-#### KenLM / Fairseq-LM decoding
+This will install the S3PRL toolkit from the `tera2` branch, which is required for the downstream evaluation tasks in this project.
 
-Suppose the pronunciation lexicon and the n-gram LM are saved at
-`/path/to/lexicon` and `/path/to/arpa`, respectively. Decoding results will be
-saved at `/path/to/experiment/directory/decode/kenlm/test`.
+### Converting Checkpoint Format
 
-```sh
-$ python examples/speech_recognition/new/infer.py \
-  --config-dir /path/to/fairseq-py/examples/hubert/config/decode \
-  --config-name infer_kenlm \
-  task.data=/path/to/data \
-  task.normalize=[true|false] \
-  decoding.exp_dir=/path/to/experiment/directory \
-  common_eval.path=/path/to/checkpoint
-  dataset.gen_subset=test \
-  decoding.decoder.lexicon=/path/to/lexicon \
-  decoding.decoder.lmpath=/path/to/arpa
+After pretraining, convert the checkpoint format using s3prl:
+
+```bash
+python3 upstream/tera2/convert.py \
+  result/tera2_slim_960_200per/checkpoints/checkpoint_best.pt \
+  --output_dir=result/tera2_slim_960_200per/converted_ckpts/
 ```
 
-The command above uses the default decoding hyperparameter, which can be found
-in `examples/speech_recognition/hydra/decoder.py`. These parameters can be
-configured from the command line. For example, to search with a beam size of
-500, we can append the command above with `decoding.decoder.beam=500`.
-Important parameters include:
-- decoding.decoder.beam
-- decoding.decoder.beamthreshold
-- decoding.decoder.lmweight
-- decoding.decoder.wordscore
-- decoding.decoder.silweight
+### Running Downstream Tasks
 
-To decode with a Fairseq LM, use `--config-name infer_fsqlm` instead, and
-change the path of lexicon and LM accordingly.
+#### ASR (Automatic Speech Recognition)
+
+```bash
+# Training
+python3 run_downstream.py -m train -d asr -u tera2_local \
+  -k result/tera2_slim_960_200per/converted_ckpts/checkpoint_best.pt \
+  -n asr_tera2_slim_960_200per_1e4 -o config.optimizer.lr=1.0e-4
+
+# Evaluation
+python3 run_downstream.py -m evaluate -t "test-clean" \
+  -e result/downstream/asr_tera2_slim_960_200per_1e4/dev-clean-best.ckpt
+```
+
+#### PR (Phoneme Recognition)
+
+```bash
+# Training
+python3 run_downstream.py -m train -d ctc -c downstream/ctc/libriphone.yaml \
+  -u tera2_local -k result/tera2_slim_960_200per/converted_ckpts/checkpoint_best.pt \
+  -n pr_tera2_slim_960_200per_1e3 -o config.optimizer.lr=1.0e-3
+
+# Evaluation
+python3 run_downstream.py -m evaluate \
+  -e result/downstream/pr_tera2_slim_960_200per_1e3/dev-best.ckpt
+```
+
+#### KS (Keyword Spotting)
+
+```bash
+# Training
+python3 run_downstream.py -m train -d speech_commands -u tera2_local \
+  -k result/tera2_slim_960_200per/converted_ckpts/checkpoint_best.pt \
+  -n ks_tera2_slim_960_200per_1e4 -o config.optimizer.lr=1.0e-4
+
+# Evaluation
+python3 run_downstream.py -m evaluate \
+  -e result/downstream/ks_tera2_slim_960_200per_1e4/dev-best.ckpt
+```
+
+#### SID (Speaker Identification)
+
+```bash
+# Training
+python3 run_downstream.py -m train -d voxceleb1 -u tera2_local \
+  -k result/tera2_slim_960_200per/converted_ckpts/checkpoint_best.pt \
+  -n sid_tera2_slim_960_200per_1e2 -o config.optimizer.lr=1.0e-2
+
+# Evaluation
+python3 run_downstream.py -m evaluate \
+  -e result/downstream/sid_tera2_slim_960_200per_1e2/dev-best.ckpt
+```
+
+#### ASV (Automatic Speaker Verification)
+
+```bash
+# Training
+python3 run_downstream.py -m train -d sv_voxceleb1 -u tera2_local \
+  -k result/tera2_slim_960_200per/converted_ckpts/checkpoint_best.pt \
+  -n asv_tera2_slim_960_200per_1e4 -o config.optimizer.lr=1.0e-4
+
+# Evaluation
+./downstream/sv_voxceleb1/test_expdir.sh \
+  ./result/downstream/asv_tera2_slim_960_200per_1e4/ /media/andi611/1TBSSD/VoxCeleb1
+
+# Alternative evaluation path
+./downstream/sv_voxceleb1/test_expdir.sh \
+  ./result/downstream/asv_tera2_slim_960_200per_1e4/ /work/a129195789/VoxCeleb1
+```
+
+## Citation
+
+If you use this code for your research, please cite our paper:
+
+```bibtex
+@ARTICLE{tera-ssl,
+  author={Liu, Andy T. and Li, Shang-Wen and Lee, Hung-yi},
+  journal={IEEE/ACM Transactions on Audio, Speech, and Language Processing}, 
+  title={TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech}, 
+  year={2021},
+  volume={29},
+  number={},
+  pages={2351-2366},
+  keywords={Task analysis;Predictive models;Acoustics;Speech processing;Training;Data models;Bit error rate;Self-supervised;pre-training;representation},
+  doi={10.1109/TASLP.2021.3095662}}
+
+```
+
+## Contact
+
+(mailto:liuandyt@gmail.com)
