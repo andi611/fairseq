@@ -1,9 +1,9 @@
 # pretraining:
 ## slim
-python3 fairseq_cli/hydra_train.py --config-dir /work/a129195789/fairseq/examples/tera/config/pretrain/exp --config-name tera_large_1582per_librispeech task.data=/work/a129195789/fairseq/examples/hubert/simple_kmeans/data_dir/960 task.label_dir=/work/a129195789/fairseq/examples/hubert/simple_kmeans/label_dir/960
+python3 fairseq_cli/hydra_train.py --config-dir /path/to/fairseq/examples/tera/config/pretrain --config-name tera_slim_librispeech task.data=/path/to/fairseq/examples/hubert/simple_kmeans/data_dir/960 task.label_dir=/path/to/fairseq/examples/hubert/simple_kmeans/label_dir/960
 
 ## slim %
-python3 fairseq_cli/hydra_train.py --config-dir /work/a129195789/fairseq/examples/tera/config/pretrain/exp --config-name tera_slim_200per_50flops_librispeech task.data=/work/a129195789/fairseq/examples/hubert/simple_kmeans/data_dir/960 task.label_dir=/work/a129195789/fairseq/examples/hubert/simple_kmeans/label_dir/960
+python3 fairseq_cli/hydra_train.py --config-dir /path/to/fairseq/examples/tera/config/pretrain/exp --config-name tera_slim_200per_50flops_librispeech task.data=/path/to/fairseq/examples/hubert/simple_kmeans/data_dir/960 task.label_dir=/path/to/fairseq/examples/hubert/simple_kmeans/label_dir/960
 
 # Downstream evaluation
 ## after pretraining, convert ckpt format with s3prl/s3prl
@@ -30,5 +30,4 @@ python3 run_downstream.py -m evaluate -e result/downstream/sid_tera2_slim_960_20
 
 ### asv
 python3 run_downstream.py -m train -d sv_voxceleb1 -u tera2_local -k result/tera2_slim_960_200per/converted_ckpts/checkpoint_best.pt -n asv_tera2_slim_960_200per_1e4 -o config.optimizer.lr=1.0e-4
-./downstream/sv_voxceleb1/test_expdir.sh ./result/downstream/asv_tera2_slim_960_200per_1e4/ /media/andi611/1TBSSD/VoxCeleb1
-./downstream/sv_voxceleb1/test_expdir.sh ./result/downstream/asv_tera2_slim_960_200per_1e4/ /work/a129195789/VoxCeleb1
+./downstream/sv_voxceleb1/test_expdir.sh ./result/downstream/asv_tera2_slim_960_200per_1e4/ /path/to/VoxCeleb1
