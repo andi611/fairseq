@@ -1,17 +1,30 @@
 # TERA - A Fairseq Implementation
-## Speech Foundation Model Pre-training and Evaluation
 
-This directory contains modified [Fairseq](https://github.com/facebookresearch/fairseq) code for pre-training TERA, a self-supervised speech foundation model from the paper [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028). While upstream pre-training uses the Fairseq toolkit, the downstream evaluation uses the [S3PRL](https://github.com/s3prl/s3prl) toolkit.
+This directory contains the upstream pre-training & downstream evaluation commands used in our recent paper:
+[Efficient Training of Self-Supervised Speech Foundation Models on a Compute Budget](pending-arxiv-link).
 
-This README also lists the upstream pre-training & downstream evaluation commands used in our recent paper [Efficient Training of Self-Supervised Speech Foundation Models\\on a Compute Budget]() for TERA.
+While upstream pre-training uses the [Fairseq](https://github.com/facebookresearch/fairseq) toolkit,
+the downstream evaluation uses the [S3PRL](https://github.com/s3prl/s3prl) toolkit.
 
-- For HuBERT pre-training, please see the instructions [here](https://github.com/andi611/fairseq/tree/master/examples/hubert) and example commands [here](https://github.com/andi611/fairseq/blob/master/examples/hubert/commands.sh).
+## Background
 
-- For wav2vec 2.0 pre-training, please see the instructions [here](https://github.com/andi611/fairseq/tree/master/examples/wav2vec) and example commands [here](https://github.com/andi611/fairseq/blob/master/examples/wav2vec/commands.sh).
+The three self-supervised learning (SSL) objectives (HuBERT, wav2vec 2.0, TERA) can be standardized with identical model components and trained using the same toolkit.
+This standardization allows us to use the same model architecture across different SSL objectives, a comparison not previously examined in the literature.
+We minimize potential confounding factors that could influence final performance by pre-training various SSL objectives with consistent building blocks.
+In our paper, we construct all models using consistent components, including a convolutional encoder, Transformer encoder blocks, and a projection layer.
+We implement and train these models using the Fairseq toolkit.
 
-The downstream evaluation process of these models is very similar to TERA, and one can also refer to the official [downstream doc](https://github.com/s3prl/s3prl/blob/main/s3prl/downstream/docs/superb.md) in S3PRL.
+## Speech Foundation Model Pre-training
 
-## Upstream Pre-training
+- For HuBERT pre-training, please see the instructions [here](https://github.com/andi611/fairseq/tree/master/examples/hubert) and example commands [here](https://github.com/andi611/fairseq/blob/master/examples/hubert/commands.sh). Note that [HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units](https://arxiv.org/abs/2106.07447) was originally proposed with the Fairseq implementation; no modification is needed.
+
+- For wav2vec 2.0 pre-training, please see the instructions [here](https://github.com/andi611/fairseq/tree/master/examples/wav2vec) and example commands [here](https://github.com/andi611/fairseq/blob/master/examples/wav2vec/commands.sh). Note that [wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations](https://arxiv.org/abs/2006.11477) was originally proposed with the Fairseq implementation; no modification is needed.
+
+- For TERA pre-training, this directory contains the modified Fairseq pre-training code. TERA is a self-supervised speech foundation model from the paper [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028), originally not implemented with Fairseq.
+
+The downstream evaluation process of these models are very similar, and one can also refer to the official [downstream doc](https://github.com/s3prl/s3prl/blob/main/s3prl/downstream/docs/superb.md) in S3PRL.
+
+## TERA Upstream Pre-training
 
 This version of TERA is modified from the HuBERT example ([HuBERT in Fairseq](https://github.com/andi611/fairseq/tree/master/examples/hubert)) with minimal modification of code. As a result, the `task.label_dir` parameter in the following commands is not actually used in the TERA implementation but is required due to the HuBERT-based code structure. Please follow the instructions in the [HuBERT example directory](https://github.com/andi611/fairseq/tree/master/examples/hubert) to obtain this.
 
@@ -49,7 +62,7 @@ python3 fairseq_cli/hydra_train.py \
   task.label_dir=/path/to/fairseq/examples/hubert/simple_kmeans/label_dir/960
 ```
 
-## Downstream Evaluation
+## TERA Downstream Evaluation
 
 ### Installing S3PRL
 
@@ -146,7 +159,7 @@ python3 run_downstream.py -m train -d sv_voxceleb1 -u tera2_local \
 If you use this code for your research, please cite our papers:
 
 ```bibtex
-@ARTICLE{tera-ssl,
+@ARTICLE{tera,
   author={Liu, Andy T. and Li, Shang-Wen and Lee, Hung-yi},
   journal={IEEE/ACM Transactions on Audio, Speech, and Language Processing}, 
   title={TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech}, 
@@ -169,6 +182,6 @@ If you use this code for your research, please cite our papers:
 
 ## Contact
 
-(mailto:liuandyt@gmail.com)
-(mailto:f07942089@ntu.edu.tw)
-(mailto:f07921092@ntu.edu.tw)
+- Corresponding author: [Andy T. Liu](mailto:liuandyt@gmail.com)
+- FLOPS related inquiries can also go to: [Yi-Cheng Lin](mailto:r12942075@ntu.edu.tw)
+- Implementation related inquiries can also go to: [Haibin Wu](mailto:f07921092@ntu.edu.tw)
