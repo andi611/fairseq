@@ -42,7 +42,7 @@ Read [here](https://github.com/andi611/fairseq/tree/master) for more details.
 
 ### _Slim_ Model
 
-To pre-train the TERA _Slim_ model on LibriSpeech:
+To pre-train the TERA 100% _Slim_ model on LibriSpeech:
 
 ```bash
 python3 fairseq_cli/hydra_train.py \
@@ -54,12 +54,12 @@ python3 fairseq_cli/hydra_train.py \
 
 ### _Slim_ Model with Different % Sizes
 
-To pre-train the TERA _Slim_ model with different % sizes on LibriSpeech:
+To pre-train the TERA _Slim_ model with different % sizes on LibriSpeech, 200% for example:
 
 ```bash
 python3 fairseq_cli/hydra_train.py \
   --config-dir /path/to/fairseq/examples/tera/config/pretrain/exp \
-  --config-name tera_slim_200per_50flops_librispeech \
+  --config-name tera_slim_200per_librispeech \
   task.data=/path/to/fairseq/examples/hubert/simple_kmeans/data_dir/960 \
   task.label_dir=/path/to/fairseq/examples/hubert/simple_kmeans/label_dir/960
 ```
