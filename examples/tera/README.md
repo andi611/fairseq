@@ -16,13 +16,15 @@ We implement and train these models using the Fairseq toolkit.
 
 ## Speech Foundation Model Pre-training
 
-- For HuBERT pre-training, please see the instructions [here](https://github.com/andi611/fairseq/tree/master/examples/hubert) and example commands [here](https://github.com/andi611/fairseq/blob/master/examples/hubert/commands.sh). Note that [HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units](https://arxiv.org/abs/2106.07447) was originally proposed with the Fairseq implementation; no modification is needed.
+- For HuBERT pre-training, please see the [instructions](https://github.com/andi611/fairseq/tree/master/examples/hubert) and [example commands](https://github.com/andi611/fairseq/blob/master/examples/hubert/commands.sh). Note that [HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units](https://arxiv.org/abs/2106.07447) was initially proposed with the Fairseq implementation; no modification is needed.
 
-- For wav2vec 2.0 pre-training, please see the instructions [here](https://github.com/andi611/fairseq/tree/master/examples/wav2vec) and example commands [here](https://github.com/andi611/fairseq/blob/master/examples/wav2vec/commands.sh). Note that [wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations](https://arxiv.org/abs/2006.11477) was originally proposed with the Fairseq implementation; no modification is needed.
+- For wav2vec 2.0 pre-training, please see the [instructions](https://github.com/andi611/fairseq/tree/master/examples/wav2vec) and [example commands](https://github.com/andi611/fairseq/blob/master/examples/wav2vec/commands.sh). Note that [wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations](https://arxiv.org/abs/2006.11477) was initially proposed with the Fairseq implementation; no modification is needed.
 
-- For TERA pre-training, this directory contains the modified Fairseq pre-training code. TERA is a self-supervised speech foundation model from the paper [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028), originally not implemented with Fairseq.
+- For TERA pre-training, this directory contains the modified Fairseq pre-training code. TERA is a self-supervised speech foundation model from the paper [TERA: Self-Supervised Learning of Transformer Encoder Representation for Speech](https://arxiv.org/abs/2007.06028), initially not implemented with Fairseq.
 
-The downstream evaluation process of these models are very similar, and one can also refer to the official [downstream doc](https://github.com/s3prl/s3prl/blob/main/s3prl/downstream/docs/superb.md) in S3PRL.
+Pre-trained checkpoints are available on [Google Drive](https://drive.google.com/drive/folders/1oUDZEdSjGATd-tJf_7Re-67HnBeoZ7NM?usp=sharing).
+
+The downstream evaluation processes of these models are very similar to each other; one can also refer to the official [downstream documentation](https://github.com/s3prl/s3prl/blob/main/s3prl/downstream/docs/superb.md) on S3PRL for a more detailed guide (data setup, preprocessing, config usage, etc).
 
 ## TERA Upstream Pre-training
 
@@ -63,6 +65,8 @@ python3 fairseq_cli/hydra_train.py \
 ```
 
 ## TERA Downstream Evaluation
+
+The downstream evaluation of TERA is on the `tera2` [branch](https://github.com/s3prl/s3prl/tree/tera2) of S3PRL. The TERA upstream is integrated into the S3PRL toolkit [here](https://github.com/s3prl/s3prl/tree/tera2/s3prl/upstream/tera2).
 
 ### Installing S3PRL
 
